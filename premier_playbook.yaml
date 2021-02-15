@@ -1,0 +1,23 @@
+---
+- name: "PLAY 1 - demo utilisation playbook"
+  hosts: all
+  become: true
+  tasks: 
+    - name: "ajout de l'utilisateur de déploiement via ansible"
+      ansible.builtin.user:
+        name: deploy
+        state: present
+        shell: /bin/bash
+    - name: "dépose de la clé public du ansible chez le user deploy"
+      ansible.posix.authorized_key:
+        user: deploy
+        state: present
+        key: "{{ lookup('file', '/home/ansible/.ssh/id_rsa.pub') }}"
+    - name: "deploiement du fichier de regle  "
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/deploy
+        content: "deploy ALL=(ALL) NOPASSWD:ALL"
+        mode: 0440
+        owner: root
+        group: root
+        
