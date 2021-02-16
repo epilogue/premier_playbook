@@ -2,11 +2,31 @@
   - name: PLAY BOOTSTRAP
     hosts: all
     become: true
+
+    vars: 
+      liste_users:
+        - testuser1
+        - testuser2
+
     tasks:
       - name: Création d'un user standard avec groupe
-        user:
+        ansible.builtin.user:
           name: formation
           state: present
           shell: /bin/bash
-          groups: sudo 
+          groups: "{{ sudogrp }}"
+
+      - name: Création d'utilisateurs standards
+        ansible.builtin.user:
+          name: "{{item}}"
+          state: present
+          shell: /bin/bash
+          password: "{{ lookup('password', 'credential'
+          + '/'
+          + item
+          + '.password length=15') | password_hash('sha512') }}"
+        loop: "{{ liste_users }}"
+          
+
+
   
