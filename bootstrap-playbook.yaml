@@ -5,8 +5,12 @@
 
     vars: 
       liste_users:
-        - testuser1
-        - testuser2
+        testuser1:
+          state: present
+          shell: /bin/bash
+        testuser2:
+          state: present
+          shell: /sbin/nologin
 
     tasks:
       - name: Création d'un user standard avec groupe
@@ -18,14 +22,15 @@
 
       - name: Création d'utilisateurs standards
         ansible.builtin.user:
-          name: "{{item}}"
-          state: present
-          shell: /bin/bash
+          name: "{{ item.key }}"
+          state: "{{ item.value.state }}"
+          shell: "{{ item.value.shell }}"
           password: "{{ lookup('password', 'credential'
-          + '/'
-          + item
-          + '.password length=15') | password_hash('sha512') }}"
-        loop: "{{ liste_users }}"
+            + '/'
+            + item.key
+            + '.password length=15') | password_hash('sha512') }}"
+          update_password: on_create
+        loop: "{{ liste_users | dict2items }}"
           
 
 
