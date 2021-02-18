@@ -2,17 +2,33 @@
 - name: "PLAY 1 - demo utilisation playbook"
   hosts: all
   become: true
+
+  vars:
+    #deploy_pwd: $6$password$QSrnnf58znEKU41eJcN9cgKLOp4gkp5XXR6.j1hiiS9mHH2JhLIkZVNYjSkbYypqVVZR1nlgzeDCTuFzMmpMo0
+    deploy_pwd: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          31656435356133623236343464656330386439373830313230336634343366363934343564303064
+          6364323263623137336563376438393037323166326133340a313463383533613331396536643637
+          63653033656532636261383234316435323262636364623634396364646234613363313536336563
+          6263376339623361350a346133616239323661643232653230323563643530613332333939313633
+          64313838366662333934626561353634646139336563616363653865323466316161356363643663
+          39303233316131646230643266303233656635316663613634363161633431333932616332633964
+          313263373336653837653830666361303537
+
   tasks: 
     - name: "ajout de l'utilisateur de déploiement via ansible"
       ansible.builtin.user:
         name: deploy
         state: present
         shell: /bin/bash
+        password: "{{ deploy_pwd | string | password_hash('sha512')}}"
+
     - name: "dépose de la clé public du ansible chez le user deploy"
       ansible.posix.authorized_key:
         user: deploy
         state: present
         key: "{{ lookup('file', '/home/ansible/.ssh/id_rsa.pub') }}"
+
     - name: "deploiement du fichier de regle  "
       ansible.builtin.copy:
         dest: /etc/sudoers.d/deploy

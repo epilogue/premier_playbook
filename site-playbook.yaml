@@ -1,0 +1,12 @@
+---
+- name: PLAY1 - deploiement prerequis
+  hosts: linux
+  become: true
+  roles:
+    - require-deploy_0.0.1
+
+- name: PLAY2 - apache
+  hosts: web
+  become: true
+  roles:
+    - apache_0.0.1

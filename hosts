@@ -1,3 +1,5 @@
+manager ansible_connection=local
+
 [linux:children]
 debian
 centos
@@ -10,6 +12,9 @@ centosAnsible  ansible_ssh_host=192.168.3.153
 
 [debian:vars]
 sudogrp=sudo
+
+[web]
+debianAnsible  
 
 [centos:vars]
 sudogrp=wheel

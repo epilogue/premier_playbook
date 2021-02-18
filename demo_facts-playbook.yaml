@@ -1,0 +1,14 @@
+---
+- name: PLAY - Demo facts
+  hosts: linux
+
+  tasks:
+   - name: utilisation d'un facts
+     debug:
+      # msg: "serveur sur distri: {{ ansible_distribution }}"
+      msg: "serveur sur distrib : {{ ansible_facts.distribution }}"
+
+   - name: "recuperation de la memoire "
+     debug:
+       msg: "{{ ansible_facts.memfree_mb }}"
+     when: ansible_facts.memfree_mb >1000
